@@ -1,0 +1,36 @@
+| Erin's single HF DML Panel
+
+Def_DMPanel 'HFDM1'
+ Bs=1Nm                | Bending stiffness
+ mue=.09kg/m2      | Density
+ WD=32cm
+ HD=38cm
+
+Def_Exciter 'HFEx1'
+ Re=4ohm fre=120kHz ExpoRe=2.05 |Voice coil parameter
+ Le=0.41uH ExpoLe=0.6
+ Bl=4.29Tm |Conversion factor
+ Mms=1.3g Mmm=22g |Voice coil, magnet mass
+ Cms=1e-7m/N Rms=0.257Ns/m |Suspension
+ dVC=25mm |Voice coil diameter
+
+Def_Const
+ { HFCmS = 1; HFRmS = 0; |Panel suspension compliance
+ HFCmV = 5e-7; HFRmV = 1; |Voice coil - panel compliance
+ }
+
+System 'HF1'
+ Resistor 'Rg' R=0.1ohm node=1=2
+ Exciter 'HFEx1' Def='HFEx1' Node=2=0=4=10=0=0
+
+ |Compliance due to non rigid junction of voice coil to the panel
+ MechCompliance 'HFCm1' Node=10 Cm={HFCmV} Rm={HFRmV}
+ DMCoupler 'HFDMC1' Def='HFDM1' DefEx='HFEx1' Node=10 xp=14cm yp=24cm
+
+ | Mounting of panel to frame
+ DMCoupler 'HFDMC6' Def='HFDM1' Node=60=0 xp=16cm yp=30cm
+ MechCompliance 'HFCm6' Node=60=0 Cm={HFCmS} Rm={HFRmS}
+
+ |Radiating component
+ DMPanel 'HFDM1' Def='HFDM1'
+ x=0 y=0 z=0 HAngle=0 VAngle=0

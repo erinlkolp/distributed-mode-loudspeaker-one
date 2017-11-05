@@ -1,0 +1,42 @@
+|NXT Designer - Simulation Script
+
+Def_DMPanel 'DM1'
+ Bs=27Nm | Bending stiffness
+ mue=0.78kg/m2 | Density
+ WD={0.577+0.08} HD={0.508+0.05}  |Size of panel + baffle
+
+Def_Exciter 'Ex1'
+ Re=3.45ohm fre=120kHz ExpoRe=2.05 |Voice coil parameter
+ Le=32uH ExpoLe=0.6
+ Bl=1.5Tm |Conversion factor
+ Mms=0.35g Mmm=37g |Voice coil, magnet mass
+ Cms=170e-6m/N Rms=0.257Ns/m |Suspension
+ dVC=2.55cm |Voice coil diameter
+
+Def_Const
+ { CmS = 900e-6; RmS = 0; |Panel suspension compliance
+ CmV = 5e-7; RmV = 1; |Voice coil - panel compliance
+ }
+
+System 'S1'
+ Resistor 'Rg' R=0.1ohm node=1=2
+ Exciter 'Ex11' Def='Ex1' Node=2=4=10=0=0
+ Exciter 'Ex12' Def='Ex1' Node=4=0=20=0=0
+ |Compliance due to non rigid junction of voice coil to the panel
+ MechCompliance 'Cm1' Node=10 Cm={CmV} Rm={RmV}
+ MechCompliance 'Cm2' Node=20 Cm={CmV} Rm={RmV}
+ DMCoupler 'DMC1' Def='DM1' DefEx='Ex1' Node=10 xp=26cm yp=22cm
+ DMCoupler 'DMC2' Def='DM1' DefEx='Ex1' Node=20 xp=33.1cm yp=28.9cm
+ |Four suspensions of panel to frame
+ DMCoupler 'DMC3' Def='DM1' Node=30=40 xp=5cm yp=0cm
+ MechCompliance 'Cm3' Node=30=40 Cm={CmS} Rm={RmS}
+ DMCoupler 'DMC4' Def='DM1' Node=40=50 xp=53cm yp=50cm
+ MechCompliance 'Cm4' Node=40=50 Cm={CmS} Rm={RmS}
+ DMCoupler 'DMC5' Def='DM1' Node=50=60 xp=0cm yp=45cm
+ MechCompliance 'Cm5' Node=50=60 Cm={CmS} Rm={RmS}
+ DMCoupler 'DMC6' Def='DM1' Node=60=0 xp=58cm yp=5cm
+ MechCompliance 'Cm6' Node=60=0 Cm={CmS} Rm={RmS}
+
+| Radiating component
+DMPanel 'DM1' Def='DM1'
+ x=0 y=0 z=0 HAngle=0 VAngle=0
